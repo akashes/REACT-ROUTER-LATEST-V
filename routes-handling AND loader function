@@ -1,0 +1,77 @@
+//instead of objects using the old ROUTES with little changes
+import { createBrowserRouter,createRoutesFromElements,Outlet,Route,RouterProvider } from 'react-router-dom';
+import Home from './pages/Home';
+import Contact from './pages/Contact';
+import { dataLoader } from './pages/Data';
+import Data from './pages/Data';
+
+function App() {
+            const router = createBrowserRouter(
+              createRoutesFromElements(
+                <Route path='/' element={<Root/>}>
+                  <Route  index element={<Home/>} />
+                  <Route path='/contact'  element={<Contact/>} />
+                  <Route path='/data'  element={<Data/>}  loader={dataLoader} />
+                  
+            
+                </Route>
+            
+              )
+            )
+  return (
+    <div className="App">
+      <RouterProvider router={router}/>
+
+  
+    </div>
+  );
+}
+
+const Root=()=>{
+  return (
+    <>
+<div>Navbar</div>  
+<Outlet/>
+
+  
+    </>
+  )
+}
+
+export default App;
+
+// main feature of new update : loader function for loading data for the component at the time of rendering 
+//uses useloaderdata and usenavigation for this
+import React from 'react'
+import { useLoaderData,useNavigation } from 'react-router-dom'
+
+const Data = () => {
+    const navigation = useNavigation()
+    const users = useLoaderData()
+    console.log(navigation)
+    if(navigation.state==='loading'){
+        return <h1>Loading.....</h1>
+    }
+    console.log(users)
+  return (
+    <div>
+        {
+            users.map((user)=>{
+                return (
+                    <p>{user.name}</p>
+                )
+            })
+        }
+      
+    </div>
+  )
+}
+
+export const dataLoader=async()=>{
+    const res = await fetch('https://jsonplaceholder.typicode.com/users')
+    const users = await res.json()
+    return users
+}
+
+export default Data
+
